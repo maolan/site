@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Architecture: A Modular Rust Audio Ecosystem | Maolan</title>
+		<link rel="canonical" href="https://maolan.rs/architecture/">
+		<meta name="robots" content="index, follow">
+		<meta name="author" content="Maolan">
+		<meta name="description" content="How Maolan organizes a digital audio workstation across independent Rust repositories, an embeddable audio engine, isolated plugin processes, reusable widgets, and neural audio tools.">
+		<link rel="stylesheet" href="/css/main.css">
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:title" content="Architecture: A Modular Rust Audio Ecosystem">
+		<meta name="twitter:description" content="The architecture, engineering decisions, and tradeoffs behind Maolan's open-source Rust audio ecosystem.">
+		<meta property="og:url" content="https://maolan.rs/architecture/">
+		<meta property="og:site_name" content="Maolan">
+		<meta property="og:title" content="Architecture: A Modular Rust Audio Ecosystem">
+		<meta property="og:description" content="The architecture, engineering decisions, and tradeoffs behind Maolan's open-source Rust audio ecosystem.">
+		<meta property="og:locale" content="en">
+		<meta property="og:type" content="article">
+	</head>
+	<body>
+		<nav class="site-nav"><div class="site-nav-inner">
+			<a class="site-brand" href="/"><img fetchpriority="high" src="/img/logo.svg" alt="Maolan logo: Open Source Digital Audio Workstation" width="32" height="32"><span>Maolan</span></a><div class="site-menu">
+				<a href="/architecture/" aria-current="page">Architecture</a>
+				<a href="/download/">Download</a>
+				<a href="https://doc.maolan.rs" target="_blank" rel="noreferrer noopener">Docs</a>
+			</div>
+			<a class="site-nav-link" href="https://github.com/maolan" target="_blank" rel="noreferrer noopener">GitHub</a>
+		</div></nav><main class="app-container">
+			<section class="gradient-dark relative overflow-hidden px-6 pb-20 pt-32">
+				<div class="absolute right-0 top-0 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl"></div>
+				<div class="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl"></div>
+				<div class="relative z-10 mx-auto max-w-5xl">
+					<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-4">Engineering case study</p>
+					<h1 class="section-title mb-6 text-white">Building a DAW as an <span class="text-cyan-400">open Rust ecosystem</span></h1>
+					<p class="max-w-4xl text-xl leading-relaxed text-slate-300">How Maolan separates a real-time audio engine, desktop application, plugin runtime, reusable interface components, and neural audio research across focused repositories.</p>
+					<div class="mt-8 flex flex-wrap gap-3">
+						<span class="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full text-cyan-400 text-sm font-medium">Rust, edition 2024</span>
+						<span class="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full text-cyan-400 text-sm font-medium">Linux, FreeBSD, macOS &amp; Windows</span>
+						<span class="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full text-cyan-400 text-sm font-medium">Out-of-process plugins</span>
+					</div>
+					<div class="mt-10 flex flex-col sm:flex-row gap-4">
+						<a href="https://github.com/maolan" target="_blank" rel="noreferrer noopener" class="btn-primary px-8 py-3 rounded-lg">Explore the repositories</a>
+						<a href="#architecture" class="btn-secondary px-8 py-3 rounded-lg">Read the architecture</a>
+					</div>
+				</div>
+			</section>
+
+			<section class="py-16 px-6 bg-slate-950 border-t border-slate-800"><div class="max-w-6xl mx-auto">
+				<div class="grid md:grid-cols-3 gap-6">
+					<div class="glass-card rounded-xl p-6">
+						<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.18em] mb-3">Reusable core</p>
+						<h2 class="text-xl font-semibold text-white mb-2">An engine, not just an application</h2>
+						<p class="text-slate-400">The audio engine is independently consumable, with optional audio-file, MIDI-file, plugin, and control-surface capabilities.</p>
+					</div>
+					<div class="glass-card rounded-xl p-6">
+						<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.18em] mb-3">Contained failures</p>
+						<h2 class="text-xl font-semibold text-white mb-2">One process per plugin</h2>
+						<p class="text-slate-400">Third-party plugin code runs outside the DAW process, allowing a failed host to be bypassed without taking down the session.</p>
+					</div>
+					<div class="glass-card rounded-xl p-6">
+						<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.18em] mb-3">Focused evolution</p>
+						<h2 class="text-xl font-semibold text-white mb-2">Independent repositories</h2>
+						<p class="text-slate-400">Platform adapters, user-interface components, plugins, documentation, and AI research can change at different rates.</p>
+					</div>
+				</div>
+			</div></section>
+
+			<section class="py-20 px-6 bg-slate-900"><div class="max-w-5xl mx-auto">
+				<div class="text-center mb-12">
+					<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-3">The problem</p>
+					<h2 class="section-title text-white mb-6">A DAW is several hard systems at once</h2>
+					<p class="text-lg text-slate-300 max-w-3xl mx-auto">The challenge is not only drawing a timeline or playing samples. It is keeping several incompatible rates of change and failure modes inside one coherent product.</p>
+				</div>
+				<div class="grid md:grid-cols-2 gap-6">
+					<div class="bg-slate-950/50 border border-slate-800 rounded-xl p-6">
+						<h3 class="text-xl font-semibold text-cyan-400 mb-3">Real-time deadlines</h3>
+						<p class="text-slate-400">Audio processing must keep up with the hardware callback while recording, playback, routing, automation, and plugin processing compete for the same time budget.</p>
+					</div>
+					<div class="bg-slate-950/50 border border-slate-800 rounded-xl p-6">
+						<h3 class="text-xl font-semibold text-cyan-400 mb-3">Untrusted extension code</h3>
+						<p class="text-slate-400">A DAW depends on third-party plugins, but a plugin crash or hang must not become a project crash. Supporting several formats adds more implementation and user-interface differences.</p>
+					</div>
+					<div class="bg-slate-950/50 border border-slate-800 rounded-xl p-6">
+						<h3 class="text-xl font-semibold text-cyan-400 mb-3">Platform diversity</h3>
+						<p class="text-slate-400">ALSA, JACK, OSS, CoreAudio, WASAPI, and ASIO expose different audio models. Window embedding, MIDI, shared memory, and process synchronization add further platform-specific work.</p>
+					</div>
+					<div class="bg-slate-950/50 border border-slate-800 rounded-xl p-6">
+						<h3 class="text-xl font-semibold text-cyan-400 mb-3">Different rates of change</h3>
+						<p class="text-slate-400">A stable audio callback, a rapidly evolving editor, packaging rules, and experimental neural models should not be forced into the same development and release cycle.</p>
+					</div>
+				</div>
+				<div class="mt-10 bg-slate-800/50 border-l-4 border-cyan-400 rounded-lg p-6">
+					<p class="text-lg text-slate-200 leading-relaxed">Maolan’s answer is to give each boundary a specific job: <strong class="text-white">crates provide reuse, processes contain plugin failures, and repositories separate independent areas of development.</strong></p>
+				</div>
+			</div></section>
+
+			<section id="architecture" class="py-20 px-6 bg-slate-950"><div class="max-w-6xl mx-auto">
+				<div class="text-center mb-12">
+					<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-3">The architecture</p>
+					<h2 class="section-title text-white mb-6">Layered around ownership and failure</h2>
+					<p class="text-lg text-slate-300 max-w-3xl mx-auto">The main application owns project state and the workspace. The engine owns audio processing. Plugin hosts own third-party plugin instances, while a shared protocol defines their communication.</p>
+				</div>
+				<div class="space-y-8">
+					<div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+						<h3 class="text-lg font-semibold text-white mb-4">Runtime path</h3>
+						<div class="overflow-x-auto rounded-xl border border-cyan-400/10 bg-slate-950 p-3">
+							<svg xmlns="http://www.w3.org/2000/svg" width="640" height="690" viewBox="0 0 640 690" class="w-full h-auto" style="min-width: 560px" role="img" aria-labelledby="runtime-diagram-title runtime-diagram-description" font-family="Inter, sans-serif">
+								<title id="runtime-diagram-title">Maolan runtime architecture</title>
+								<desc id="runtime-diagram-description">The Maolan application uses iced widgets and sends asynchronous messages to the audio engine. The engine communicates through shared memory and cross-process events, using the shared plugin protocol, with one plugin-host process per plugin instance. Plugin hosts load CLAP, VST3, LV2, and Audio Unit plugins. Editor and player reuse shared audio code, while generate, llama, and pitch provide AI audio pipelines.</desc>
+								<defs>
+									<marker id="runtime-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+										<path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/>
+									</marker>
+								</defs>
+
+								<text x="40" y="24" fill="#22d3ee" font-size="12" font-weight="600" letter-spacing="1.8">MAIN DAW PROCESS</text>
+
+								<rect x="40" y="40" width="300" height="80" rx="12" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+								<text x="190" y="71" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="600">maolan</text>
+								<text x="190" y="97" text-anchor="middle" fill="#94a3b8" font-size="13">GUI · project state · CLI</text>
+
+								<rect x="430" y="40" width="170" height="80" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+								<text x="515" y="71" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="600">widgets</text>
+								<text x="515" y="97" text-anchor="middle" fill="#94a3b8" font-size="13">iced components</text>
+								<path d="M 340 80 L 424 80" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#runtime-arrow)"/>
+								<text x="382" y="63" text-anchor="middle" fill="#94a3b8" font-size="12">uses</text>
+
+								<path d="M 190 120 L 190 169" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#runtime-arrow)"/>
+								<text x="210" y="141" fill="#94a3b8" font-size="13">asynchronous</text>
+								<text x="210" y="160" fill="#94a3b8" font-size="13">messages</text>
+
+								<rect x="40" y="175" width="300" height="85" rx="12" fill="#082f49" stroke="#22d3ee" stroke-width="2"/>
+								<text x="190" y="208" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="600">engine</text>
+								<text x="190" y="235" text-anchor="middle" fill="#94a3b8" font-size="13">audio · MIDI · routing</text>
+
+								<path d="M 190 260 L 190 319" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#runtime-arrow)"/>
+								<text x="210" y="284" fill="#94a3b8" font-size="13">shared memory + events</text>
+								<text x="210" y="305" fill="#67e8f9" font-size="13">plugin-protocol</text>
+
+								<rect x="40" y="325" width="300" height="95" rx="12" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+								<text x="190" y="357" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="600">plugin-host</text>
+								<text x="190" y="383" text-anchor="middle" fill="#94a3b8" font-size="13">one process per</text>
+								<text x="190" y="402" text-anchor="middle" fill="#94a3b8" font-size="13">plugin instance</text>
+
+								<path d="M 190 420 L 190 459" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#runtime-arrow)"/>
+								<text x="210" y="446" fill="#94a3b8" font-size="13">loads</text>
+
+								<rect x="40" y="465" width="560" height="100" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+								<text x="320" y="493" text-anchor="middle" fill="#f8fafc" font-size="15" font-weight="600">Plugin formats</text>
+								<rect x="65" y="510" width="110" height="36" rx="8" fill="#020617" stroke="#334155"/>
+								<rect x="195" y="510" width="110" height="36" rx="8" fill="#020617" stroke="#334155"/>
+								<rect x="325" y="510" width="90" height="36" rx="8" fill="#020617" stroke="#334155"/>
+								<rect x="435" y="510" width="140" height="36" rx="8" fill="#020617" stroke="#334155"/>
+								<text x="120" y="534" text-anchor="middle" fill="#67e8f9" font-size="14" font-weight="600">CLAP</text>
+								<text x="250" y="534" text-anchor="middle" fill="#67e8f9" font-size="14" font-weight="600">VST3</text>
+								<text x="370" y="534" text-anchor="middle" fill="#67e8f9" font-size="14" font-weight="600">LV2</text>
+								<text x="505" y="534" text-anchor="middle" fill="#67e8f9" font-size="14" font-weight="600">Audio Unit</text>
+
+								<text x="40" y="600" fill="#22d3ee" font-size="12" font-weight="600" letter-spacing="1.8">ADJACENT TOOLS</text>
+								<rect x="40" y="615" width="260" height="60" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+								<text x="170" y="641" text-anchor="middle" fill="#f8fafc" font-size="16" font-weight="600">editor / player</text>
+								<text x="170" y="662" text-anchor="middle" fill="#94a3b8" font-size="13">shared audio code</text>
+								<rect x="340" y="615" width="260" height="60" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+								<text x="470" y="641" text-anchor="middle" fill="#f8fafc" font-size="16" font-weight="600">generate / llama / pitch</text>
+								<text x="470" y="662" text-anchor="middle" fill="#94a3b8" font-size="13">AI audio pipelines</text>
+							</svg>
+						</div>
+					</div>
+					<div class="space-y-6">
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-xl font-semibold text-white mb-2">Application and project state</h3>
+							<p class="text-slate-400"><a class="text-cyan-400" href="https://github.com/maolan/maolan" target="_blank" rel="noreferrer noopener">maolan</a> contains the iced desktop application, workspace, command-line tools, session handling, and the thin plugin-host executable. It communicates with the engine through an asynchronous message channel rather than merging interface and DSP responsibilities.</p>
+						</div>
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-xl font-semibold text-white mb-2">Audio and routing</h3>
+							<p class="text-slate-400"><a class="text-cyan-400" href="https://github.com/maolan/engine" target="_blank" rel="noreferrer noopener">engine</a> provides real-time audio and MIDI tracks, timeline playback and recording, routing, offline rendering, hardware backends, and plugin wrappers. Its Cargo features let consumers opt into file codecs, Standard MIDI File I/O, plugins, and MixOSC integration.</p>
+						</div>
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-xl font-semibold text-white mb-2">Shared plugin contract</h3>
+							<p class="text-slate-400"><a class="text-cyan-400" href="https://github.com/maolan/plugin-protocol" target="_blank" rel="noreferrer noopener">plugin-protocol</a> is the common contract between engine and host. <a class="text-cyan-400" href="https://github.com/maolan/plugin-host" target="_blank" rel="noreferrer noopener">plugin-host</a> supplies the reusable format loaders, scanner, and runtime used by the executable.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="mt-16">
+					<h3 class="text-3xl font-bold text-white mb-6 text-center">Repository map</h3>
+					<p class="text-slate-400 text-center max-w-3xl mx-auto mb-8">The wider checkout follows the same separation of concerns. Each row groups repositories by their role in the ecosystem.</p>
+					<div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/40">
+						<table>
+							<thead><tr><th>Layer</th><th>Repositories</th><th>Responsibility</th></tr></thead>
+							<tbody>
+								<tr><td class="text-cyan-400 font-semibold">Applications</td><td><code>maolan</code>, <code>editor</code>, <code>player</code></td><td>DAW and CLI, standalone non-destructive waveform editing, and audio playback.</td></tr>
+								<tr><td class="text-cyan-400 font-semibold">Core &amp; UI</td><td><code>engine</code>, <code>widgets</code></td><td>Audio/MIDI processing and reusable iced timeline, piano-roll, mixer, and meter components.</td></tr>
+								<tr><td class="text-cyan-400 font-semibold">Plugin runtime</td><td><code>plugin-host</code>, <code>plugin-protocol</code>, <code>plugins</code></td><td>Isolated hosting, shared-memory communication, and Maolan’s CLAP plugin collection.</td></tr>
+								<tr><td class="text-cyan-400 font-semibold">Formats &amp; platforms</td><td><code>clap</code>, <code>lv2</code>, <code>baseview</code>, <code>asio</code></td><td>Plugin API support, pure-Rust LV2 discovery and loading, plugin windowing, and Windows ASIO.</td></tr>
+								<tr><td class="text-cyan-400 font-semibold">AI &amp; research</td><td><code>generate</code>, <code>llama</code>, <code>pitch</code>, <code>trainer</code>, <code>vocal</code></td><td>Music and MIDI generation, local Llama inference, pitch analysis and resynthesis, model training, and voice-conversion research.</td></tr>
+								<tr><td class="text-cyan-400 font-semibold">Integration &amp; project</td><td><code>mixosc</code>, <code>doc</code>, <code>site</code></td><td>OSC mixer control, user documentation, and the public website.</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div></section>
+
+			<section class="py-20 px-6 bg-slate-900"><div class="max-w-6xl mx-auto">
+				<div class="text-center mb-12">
+					<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-3">Key engineering decisions</p>
+					<h2 class="section-title text-white mb-6">Choose explicit tradeoffs</h2>
+				</div>
+				<div class="space-y-8">
+					<article class="bg-slate-950/60 border border-slate-800 rounded-2xl p-8">
+						<div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+							<div>
+								<p class="text-cyan-400 text-sm font-semibold mb-2">01 / Plugin isolation</p>
+								<h3 class="text-2xl font-bold text-white mb-4">Move third-party code out of the DAW process</h3>
+								<p class="text-slate-300 mb-4">Every plugin instance receives its own host process. Audio buffers, parameter changes, MIDI, and transport data use shared memory; lightweight events coordinate the two sides. Single-producer/single-consumer ring buffers provide lock-free event queues.</p>
+								<p class="text-slate-300">If a plugin crashes, the operating system terminates only its host. The DAW can detect the failure, bypass the instance, and continue playback. This is an architectural guarantee about the failure domain, not a claim that every plugin is compatible.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The cost</h4>
+								<p class="text-slate-400 mb-4">Process creation, shared-memory ownership, synchronization, recovery, and cross-platform event handling are more complex than an in-process function call.</p>
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The constraint</h4>
+								<p class="text-slate-400">The DAW and host must use compatible protocol versions. Fixed shared-memory layouts make protocol changes a coordinated release concern.</p>
+							</div>
+						</div>
+						<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-2">CLAP</h4>
+								<p class="text-slate-400 text-sm">The <code>clap</code> crate supplies API bindings, while <code>plugin-host</code> provides host extensions and the isolated runtime. Maolan’s own plugin collection also uses CLAP.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-2">VST3</h4>
+								<p class="text-slate-400 text-sm">VST3 bindings and hosting live in <code>plugin-host</code> and use the same shared-memory protocol, event exchange, and crash-isolation path as the other formats.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-2">LV2</h4>
+								<p class="text-slate-400 text-sm">The pure-Rust <code>lv2</code> crate handles discovery and loading on Unix without a system lilv dependency, with hosting isolated in <code>plugin-host</code>.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-2">Audio Unit</h4>
+								<p class="text-slate-400 text-sm">On macOS, <code>plugin-host</code> discovers Audio Units through the system registry and hosts both AUv2 and AUv3 components behind a common interface.</p>
+							</div>
+						</div>
+					</article>
+
+					<article class="bg-slate-950/60 border border-slate-800 rounded-2xl p-8">
+						<div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+							<div>
+								<p class="text-cyan-400 text-sm font-semibold mb-2">02 / Reuse</p>
+								<h3 class="text-2xl font-bold text-white mb-4">Keep the engine and widgets independently useful</h3>
+								<p class="text-slate-300 mb-4">The engine has no mandatory GUI dependency, and its default feature set is deliberately small. Applications can enable only the capabilities they need. The editor reuses shared audio decode and encode paths instead of growing a second media stack.</p>
+								<p class="text-slate-300">The widgets crate follows a similar rule: it supplies clip rendering, piano-roll surfaces, controls, meters, scrollbars, and MIDI data types, while higher-level editing behavior stays in the application. Pure layout and interaction logic can therefore be tested without launching the full DAW.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The benefit</h4>
+								<p class="text-slate-400 mb-4">The engine can serve other Rust applications, and multiple frontends can share media and interface infrastructure.</p>
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The cost</h4>
+								<p class="text-slate-400">Public APIs, feature combinations, cross-crate patches, and publication order require deliberate maintenance.</p>
+							</div>
+						</div>
+					</article>
+
+					<article class="bg-slate-950/60 border border-slate-800 rounded-2xl p-8">
+						<div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+							<div>
+								<p class="text-cyan-400 text-sm font-semibold mb-2">03 / Native integration</p>
+								<h3 class="text-2xl font-bold text-white mb-4">Isolate unavoidable platform and FFI complexity</h3>
+								<p class="text-slate-300 mb-4">Platform backends keep ALSA, JACK, OSS, CoreAudio, WASAPI, and pure-Rust ASIO support behind the engine. LV2 discovery and loading use a pure-Rust implementation rather than a system lilv dependency. Audio import and export use Rust codec libraries, avoiding an FFmpeg dependency.</p>
+								<p class="text-slate-300">Rust does not remove the difficult parts: plugin ABIs, shared memory, operating-system events, window embedding, and audio APIs still require carefully scoped <code>unsafe</code> code. Portable SIMD and parallel processing help hot paths while retaining platform fallbacks.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The benefit</h4>
+								<p class="text-slate-400 mb-4">Most product logic stays separate from operating-system details, and codec or plugin support does not require a large external C multimedia stack.</p>
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The cost</h4>
+								<p class="text-slate-400">Each backend and format needs its own validation. Memory safety at an FFI boundary depends on invariants that the Rust compiler cannot check automatically.</p>
+							</div>
+						</div>
+					</article>
+
+					<article class="bg-slate-950/60 border border-slate-800 rounded-2xl p-8">
+						<div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+							<div>
+								<p class="text-cyan-400 text-sm font-semibold mb-2">04 / Neural audio</p>
+								<h3 class="text-2xl font-bold text-white mb-4">Let research evolve beside the real-time core</h3>
+								<p class="text-slate-300 mb-4">The generation, Llama, pitch, training, and voice-conversion repositories form a separate research layer. Burn provides model execution, while model artifacts use formats such as BurnPack and safetensors and are downloaded or supplied locally rather than embedded in source repositories.</p>
+								<p class="text-slate-300">This separation makes hardware and asset requirements explicit. For example, the pitch crate’s FCPE detection and PC-NSF-HiFiGAN resynthesis require a working Vulkan GPU and have no CPU fallback. Model weights also carry their own licenses, distinct from the Rust source code.</p>
+							</div>
+							<div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The benefit</h4>
+								<p class="text-slate-400 mb-4">Model architectures and inference tools can change without redefining the engine’s real-time interfaces.</p>
+								<h4 class="text-lg font-semibold text-cyan-400 mb-3">The cost</h4>
+								<p class="text-slate-400">GPU availability, large downloads, conversion tooling, and per-model licensing become part of the user and release experience.</p>
+							</div>
+						</div>
+					</article>
+				</div>
+			</div></section>
+
+			<section class="py-20 px-6 bg-slate-950"><div class="max-w-6xl mx-auto">
+				<div class="grid lg:grid-cols-2 gap-12 items-start">
+					<div>
+						<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-3">Delivery model</p>
+						<h2 class="section-title text-white mb-6">Independent crates, coordinated changes</h2>
+						<p class="text-lg text-slate-300 mb-6">There is intentionally no single Cargo workspace at the repository root. Each major component owns its manifest, lockfile, tests, and Git history; the main DAW has its own smaller workspace.</p>
+						<p class="text-slate-400 mb-6">That structure supports focused development, but it does not remove integration work. Local path dependencies and patches connect sibling crates during development. Cross-cutting protocol or API changes still require checking dependents and coordinating publication.</p>
+						<div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+							<p class="text-sm text-slate-400 mb-3">Recurring checks in the Rust repositories</p>
+							<pre class="overflow-x-auto text-sm leading-7"><code>cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo test --all-targets</code></pre>
+						</div>
+					</div>
+					<div class="grid sm:grid-cols-2 gap-6">
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-lg font-semibold text-white mb-2">Local verification</h3>
+							<p class="text-slate-400 text-sm">Unit tests live close to implementation code, with platform-gated and DSP-focused tests where appropriate.</p>
+						</div>
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-lg font-semibold text-white mb-2">Repository CI</h3>
+							<p class="text-slate-400 text-sm">Formatting, linting, and tests form a common quality baseline across independently published crates.</p>
+						</div>
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-lg font-semibold text-white mb-2">Native packaging</h3>
+							<p class="text-slate-400 text-sm">Release workflows produce platform archives and installers, Linux packages, and a macOS application bundle.</p>
+						</div>
+						<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+							<h3 class="text-lg font-semibold text-white mb-2">Documented boundaries</h3>
+							<p class="text-slate-400 text-sm">Repository instructions record build commands, protocol coupling, publication order, and hardware requirements.</p>
+						</div>
+					</div>
+				</div>
+			</div></section>
+
+			<section class="py-20 px-6 bg-slate-900"><div class="max-w-6xl mx-auto">
+				<div class="text-center mb-12">
+					<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-3">Outcomes &amp; lessons</p>
+					<h2 class="section-title text-white mb-6">Modularity is a product feature</h2>
+					<p class="text-lg text-slate-300 max-w-3xl mx-auto">The clearest results are visible in the system’s structure: reusable components, contained failures, and room for specialized tools without turning the DAW into a monolith.</p>
+				</div>
+				<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+					<div class="feature-card rounded-xl p-6">
+						<h3 class="text-lg font-semibold text-white mb-3">Reuse beyond the GUI</h3>
+						<p class="text-slate-400 text-sm">The engine, plugin host, protocol, and widgets are available as focused building blocks rather than existing only inside the desktop binary.</p>
+					</div>
+					<div class="feature-card rounded-xl p-6">
+						<h3 class="text-lg font-semibold text-white mb-3">A defined plugin failure domain</h3>
+						<p class="text-slate-400 text-sm">The process boundary turns a whole-application crash risk into a host-recovery problem that the engine can handle.</p>
+					</div>
+					<div class="feature-card rounded-xl p-6">
+						<h3 class="text-lg font-semibold text-white mb-3">Specialization without duplication</h3>
+						<p class="text-slate-400 text-sm">The editor, player, plugins, and research tools can focus on their own jobs while sharing selected audio and UI infrastructure.</p>
+					</div>
+					<div class="feature-card rounded-xl p-6">
+						<h3 class="text-lg font-semibold text-white mb-3">Tradeoffs stay visible</h3>
+						<p class="text-slate-400 text-sm">Version coordination, platform testing, unsafe boundaries, and model requirements are documented instead of hidden behind the word “modular.”</p>
+					</div>
+				</div>
+				<div class="mt-12 grid lg:grid-cols-2 gap-8">
+					<div class="bg-slate-950/60 border border-slate-800 rounded-xl p-6">
+						<h3 class="text-xl font-semibold text-cyan-400 mb-3">What the architecture teaches</h3>
+						<ul class="space-y-3 text-slate-300">
+							<li>Separate components according to ownership and failure, not just source-code size.</li>
+							<li>Put shared protocols in their own crate when two processes must agree on memory.</li>
+							<li>Make optional capabilities visible through explicit feature flags.</li>
+							<li>Treat release coordination and hardware requirements as part of architecture.</li>
+						</ul>
+					</div>
+					<div class="bg-slate-950/60 border border-slate-800 rounded-xl p-6">
+						<h3 class="text-xl font-semibold text-cyan-400 mb-3">What remains hard</h3>
+						<ul class="space-y-3 text-slate-300">
+							<li>Plugin compatibility still varies by plugin, host behavior, and operating system.</li>
+							<li>Protocol changes require compatible DAW and plugin-host deployments.</li>
+							<li>Every native backend and plugin UI path needs platform-specific testing.</li>
+							<li>Maolan remains under active development; interfaces and behavior continue to evolve.</li>
+						</ul>
+					</div>
+				</div>
+			</div></section>
+
+			<section class="py-20 px-6 bg-slate-950 border-t border-slate-800"><div class="max-w-4xl mx-auto text-center">
+				<p class="text-cyan-400 text-sm font-semibold uppercase tracking-[0.2em] mb-3">Conclusion</p>
+				<h2 class="section-title text-white mb-6">An open audio stack, built in layers</h2>
+				<p class="text-xl text-slate-300 leading-relaxed mb-6">Maolan shows how a digital audio workstation can be decomposed without losing a coherent product: a reusable engine at the center, isolated plugin processes at the extension boundary, shared widgets across applications, and independent repositories for platform and research work.</p>
+				<p class="text-slate-400 max-w-2xl mx-auto mb-10">The result is not a claim of finished software or universal plugin compatibility. It is an inspectable, actively evolving architecture whose main constraints—and the reasons for them—are visible in the source.</p>
+				<div class="flex flex-col sm:flex-row gap-4 justify-center">
+					<a href="https://github.com/maolan" target="_blank" rel="noreferrer noopener" class="btn-primary px-8 py-3 rounded-lg">View the source on GitHub</a>
+					<a href="/" class="btn-secondary px-8 py-3 rounded-lg">Explore Maolan features</a>
+				</div>
+			</div></section>
+
+			<footer class="site-footer"><div class="site-footer-inner">
+				<div class="site-footer-copy">Maolan is open source under the BSD-2-Clause license powered by <a href="https://sys.it.com">SysIT</a></div>
+				<div class="site-footer-links"></div>
+			</div></footer>
+		</main>
+	</body>
+</html>
