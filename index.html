@@ -64,25 +64,6 @@
 						setups.</p>
 				</div>
 			</div>
-		</div></section><section class="py-20 px-6 bg-slate-900"><div class="max-w-4xl mx-auto">
-			<h2 class="text-center section-title mb-12 text-white">The Challenge</h2>
-			<div class="grid md:grid-cols-3 gap-8">
-				<div>
-					<h3 class="text-lg font-semibold mb-3 text-cyan-400">Closed Ecosystems</h3>
-					<p class="text-slate-400">Most modern DAWs are proprietary black boxes. You can't inspect
-						the code, understand how they work, or modify them for your needs.</p>
-				</div>
-				<div>
-					<h3 class="text-lg font-semibold mb-3 text-cyan-400">High Costs</h3>
-					<p class="text-slate-400">Professional DAWs require expensive licenses. For students,
-						hobbyists, and developers, this creates barriers to entry.</p>
-				</div>
-				<div>
-					<h3 class="text-lg font-semibold mb-3 text-cyan-400">Limited Flexibility</h3>
-					<p class="text-slate-400">Extending functionality or integrating custom workflows is
-						difficult or impossible without source code access.</p>
-				</div>
-			</div>
 		</div></section><section class="py-20 px-6 bg-slate-950"><div class="max-w-4xl mx-auto">
 			<h2 class="text-center section-title mb-12 text-white">The Solution</h2>
 			<div class="grid md:grid-cols-2 gap-12 items-center">
@@ -92,20 +73,20 @@
 					<p class="text-lg text-slate-300 mb-6 leading-relaxed">Inspect every line of code. Build custom features. Contribute
 						improvements. Own your tools.</p>
 					<ul class="space-y-3">
-						<li class="flex-auto items-start space-x-3">
-							<span class="text-cyan-400 font-bold mt-1">✓</span>
+						<li class="flex items-start">
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>
 							<span class="text-slate-300">100% open source under a permissive license</span>
 						</li>
-						<li class="flex-auto items-start space-x-3">
-							<span class="text-cyan-400 font-bold mt-1">✓</span>
+						<li class="flex items-start">
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>
 							<span class="text-slate-300">Built with Rust for safety and performance</span>
 						</li>
-						<li class="flex-auto items-start space-x-3">
-							<span class="text-cyan-400 font-bold mt-1">✓</span>
+						<li class="flex items-start">
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>
 							<span class="text-slate-300">Community-driven development and improvements</span>
 						</li>
-						<li class="flex-auto items-start space-x-3">
-							<span class="text-cyan-400 font-bold mt-1">✓</span>
+						<li class="flex items-start">
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>
 							<span class="text-slate-300">Forever free, no licensing fees</span>
 						</li>
 					</ul>
@@ -140,13 +121,13 @@
 					<div class="w-12 h-12 rounded-lg bg-cyan-500/20 flex items-center justify-center mb-4"><svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentcolor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
 					<h3 class="text-lg font-semibold mb-2 text-white">Automation &amp; Envelopes</h3>
 					<p class="text-slate-400">Create track and plugin automation for volume, balance, mute, and
-						loaded CLAP, VST3, or LV2 parameters. Save session and track
+						loaded CLAP, VST3, LV2, or Audio Unit (AU) parameters. Save session and track
 						templates for repeatable setups.</p>
 				</div>
 				<div class="feature-card rounded-lg p-6">
 					<div class="w-12 h-12 rounded-lg bg-cyan-500/20 flex items-center justify-center mb-4"><svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentcolor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828.0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg></div>
 					<h3 class="text-lg font-semibold mb-2 text-white">Plugin Hosting &amp; Routing</h3>
-					<p class="text-slate-400">Load CLAP, VST3, and LV2 plugins, create complex routing chains,
+					<p class="text-slate-400">Load CLAP, VST3, LV2, and Audio Unit (AU) plugins, create complex routing chains,
 						and design custom signal flows with explicit audio, MIDI, and
 						sidechain paths.</p>
 				</div>
@@ -187,7 +168,7 @@
 					<div class="flex-shrink-0"><div class="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-500/20"><span class="text-cyan-400 font-bold">3</span></div></div>
 					<div>
 						<h3 class="text-lg font-semibold mb-2 text-white">Plugin &amp; Routing</h3>
-						<p class="text-slate-400">Load CLAP, VST3, and LV2 plugins on tracks. Create explicit
+						<p class="text-slate-400">Load CLAP, VST3, LV2, and Audio Unit (AU) plugins on tracks. Create explicit
 							routing chains for parallel processing, sidechains, and MIDI
 							flow.</p>
 					</div>
@@ -251,52 +232,54 @@
 					<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
 						<h3 class="text-xl font-semibold text-white mb-4">Track Controls</h3>
 						<ul class="space-y-3 text-slate-300">
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Track arm, mute, solo, input monitor, and disk monitor
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Track arm, mute, solo, input monitor, and disk monitor
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Volume, balance, aux send level/pan, and pre/post send routing
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Volume, balance, aux send level/pan, and pre/post send routing
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>MIDI learn targets for volume, mute, solo, track toggles, and global transport actions (play/stop/record)
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>MIDI learn targets for volume, mute, solo, track toggles, and global transport actions (play/stop/record)
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Audio/MIDI passthrough defaults and aux send management
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Audio/MIDI passthrough defaults and aux send management
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Aux return creation from selected tracks
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Aux return creation from selected tracks
 							</li>
 						</ul>
 					</div>
 					<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
 						<h3 class="text-xl font-semibold text-white mb-4">Mixer Workflow</h3>
 						<ul class="space-y-3 text-slate-300">
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Insert effects and signal chains
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Insert effects and signal chains
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Pre-fader and post-fader routing
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Pre-fader and post-fader routing
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Session-wide mixing organization
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Session-wide mixing organization
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>CLAP/VST3/LV2 per-track graph and plugin automation paths
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>CLAP/VST3/LV2/AU per-track graph and plugin automation paths
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Plugin scan/load/unload and graph restore for CLAP/VST3/LV2
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Plugin scan/load/unload and graph restore for CLAP/VST3/LV2/AU
 							</li>
-							<li class="flex items-center">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>Offline plugin bounce path for freeze/export workflows
+							<li class="flex items-start">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Offline plugin bounce path for freeze/export workflows
 							</li>
 						</ul>
 					</div>
+				</div>
+				<div class="space-y-6">
+					<div class="bg-slate-900/30 border border-slate-800 rounded-xl p-6"><img data-ai="generate" data-slot="mixing-visual" data-prompt="Modern dark DAW mixer interface with channel strips, sends, plugin inserts, and routing lines with cyan accents" data-ar="4:3" src="/img/routing.png" alt="Routing and mixing interface" width="1200" height="900" class="w-full rounded-lg object-cover" loading="lazy"></div>
 					<div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
 						<h3 class="text-xl font-semibold text-white mb-4">Plugin Blocklist</h3>
 						<p class="text-slate-300">Known-problematic plugins can be hidden from the plugin browser and skipped during scans via <code>~/.config/maolan/plugin-blocklist.json</code>. Entries can be added automatically when a plugin scan fails.</p>
 					</div>
 				</div>
-				<div class="bg-slate-900/30 border border-slate-800 rounded-xl p-6"><img data-ai="generate" data-slot="mixing-visual" data-prompt="Modern dark DAW mixer interface with channel strips, sends, plugin inserts, and routing lines with cyan accents" data-ar="4:3" src="/img/routing.png" alt="Routing and mixing interface" width="1200" height="900" class="w-full rounded-lg object-cover" loading="lazy"></div>
 			</div>
 		</div></section><section class="py-16 bg-slate-950"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
@@ -308,22 +291,22 @@
 					<h3 class="text-lg font-semibold text-white mb-4">Launch and Scene Workflow</h3>
 					<ul class="space-y-3 text-slate-300 text-sm">
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Clip-launch grid: rows are tracks, columns are scenes
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Clip-launch grid: rows are tracks, columns are scenes
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Switch between Workspace and Session view with <code>Tab</code>
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Switch between Workspace and Session view with <code>Tab</code>
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Launch or stop slots with a click or <code>Return</code>
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Launch or stop slots with a click or <code>Return</code>
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Launch whole scenes from the Master column
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Launch whole scenes from the Master column
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Stop all clips with <code>Shift+Space</code>
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Stop all clips with <code>Shift+Space</code>
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Per-track strip with mute, solo, arm, volume, and pan controls
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Per-track strip with mute, solo, arm, volume, and pan controls
 						</li>
 					</ul>
 				</div>
@@ -331,19 +314,19 @@
 					<h3 class="text-lg font-semibold text-white mb-4">Arrangement Integration</h3>
 					<ul class="space-y-3 text-slate-300 text-sm">
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Slots reference arrangement clips by stable clip ID, so arrangement edits are reflected in the grid
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Slots reference arrangement clips by stable clip ID, so arrangement edits are reflected in the grid
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Move, duplicate, and copy slot references between the grid and the arrangement
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Move, duplicate, and copy slot references between the grid and the arrangement
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Record directly into slots
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Record directly into slots
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>“Rec to Arr” records the session performance into the arrangement
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>“Rec to Arr” records the session performance into the arrangement
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Import the arrangement into the grid
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Import the arrangement into the grid
 						</li>
 					</ul>
 				</div>
@@ -351,13 +334,13 @@
 					<h3 class="text-lg font-semibold text-white mb-4">Scene Options</h3>
 					<ul class="space-y-3 text-slate-300 text-sm">
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Rename scenes and set colors from the scene header context menu
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Rename scenes and set colors from the scene header context menu
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Per-scene tempo
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Per-scene tempo
 						</li>
 						<li class="flex items-start">
-							<div class="w-2 h-2 bg-cyan-400 rounded-full mr-3 mt-1.5"></div>Configurable launch quantization
+							<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mr-3 mt-2"></div>Configurable launch quantization
 						</li>
 					</ul>
 				</div>
@@ -397,29 +380,29 @@
 					<div>
 						<h3 class="text-xl font-semibold text-white mb-3">Current capabilities</h3>
 						<ul class="space-y-2 text-slate-300">
-							<li class="flex items-center gap-3">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full"></div>Prompt-driven or lyrics-driven audio generation with optional style tags
+							<li class="flex items-start gap-3">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mt-2"></div>Prompt-driven or lyrics-driven audio generation with optional style tags
 							</li>
-							<li class="flex items-center gap-3">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full"></div>Model choices: <code>happy-new-year</code>
+							<li class="flex items-start gap-3">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mt-2"></div>Model choices: <code>happy-new-year</code>
 								and <code>RL</code>
 							</li>
-							<li class="flex items-center gap-3">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full"></div>Controls for CFG scale, top-k, temperature, ODE steps, decoder seed, and output length in milliseconds
+							<li class="flex items-start gap-3">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mt-2"></div>Controls for CFG scale, top-k, temperature, ODE steps, decoder seed, and output length in milliseconds
 							</li>
-							<li class="flex items-center gap-3">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
+							<li class="flex items-start gap-3">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mt-2"></div>
 								<code>--decode-only</code>
 								mode using <code>--frames-json</code>
 								for saved token-frame output
 							</li>
-							<li class="flex items-center gap-3">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
+							<li class="flex items-start gap-3">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mt-2"></div>
 								<code>--decode-threads</code>
 								override for decode-only CPU worker count
 							</li>
-							<li class="flex items-center gap-3">
-								<div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
+							<li class="flex items-start gap-3">
+								<div class="w-2 h-2 flex-shrink-0 bg-cyan-400 rounded-full mt-2"></div>
 								<code>--model-dir</code>
 								override for local Burn exports instead of cache-based lookup
 							</li>
@@ -586,14 +569,14 @@
 					available on GitHub under an open-source license.
 				</div></details><details class="group bg-gray-900 border border-gray-800 rounded-lg overflow-hidden"><summary class="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-800/50 transition font-semibold"><span>Which platforms are supported?</span>
 				<span class="text-2xl group-open:rotate-180 transition">+</span></summary><div class="px-6 pb-6 text-gray-400">
-					<br>Maolan is built with Rust and supports Linux, FreeBSD, and Windows. Linux and FreeBSD builds run on Wayland when available
-					and fall back to X11 (Xorg) when Wayland is unavailable, while
-					Windows uses WASAPI.
+					<br>Maolan is built with Rust and supports Linux, FreeBSD, macOS, and Windows. Linux and FreeBSD builds run on Wayland when available
+					and fall back to X11 (Xorg) when Wayland is unavailable, macOS
+					uses CoreAudio and CoreMIDI, and Windows uses WASAPI.
 				</div></details><details class="group bg-gray-900 border border-gray-800 rounded-lg overflow-hidden"><summary class="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-800/50 transition font-semibold"><span>Which plugin formats are supported?</span>
 				<span class="text-2xl group-open:rotate-180 transition">+</span></summary><div class="px-6 pb-6 text-gray-400">
-					<br>Maolan currently supports CLAP, VST3, and LV2 plugin formats on
-					Linux and FreeBSD. LV2
-					remains Unix-only in the current codebase.
+					<br>Maolan supports CLAP and VST3 plugins on Linux, FreeBSD, macOS,
+					and Windows. LV2 is available on Linux and FreeBSD, while macOS
+					also supports Audio Unit (AUv2 and AUv3) plugins.
 				</div></details><details class="group bg-gray-900 border border-gray-800 rounded-lg overflow-hidden"><summary class="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-800/50 transition font-semibold"><span>How does autosave and recovery work?</span>
 				<span class="text-2xl group-open:rotate-180 transition">+</span></summary><div class="px-6 pb-6 text-gray-400">
 					<br>Maolan writes autosave snapshots every 15 seconds into
